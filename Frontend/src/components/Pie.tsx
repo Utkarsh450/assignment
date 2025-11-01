@@ -1,18 +1,28 @@
 import Stack from "@mui/material/Stack";
 import { PieChart } from "@mui/x-charts/PieChart";
 
-import type { BudgetData } from "../Context/types";
+import type { ExpenseData } from "../Context/types";
 
 interface PieProps {
-  filteredBudgets: BudgetData[];
+  filteredExpenses: ExpenseData[];
 }
 
-const Pie: React.FC<PieProps> = ({ filteredBudgets }) => {
+const Pie: React.FC<PieProps> = ({ filteredExpenses }) => {
+  const COLORS = [
+  "#FF6B6B", // Red
+  "#4ECDC4", // Teal
+  "#FFD93D", // Yellow
+  "#6A5ACD", // Purple
+  "#FFA500", // Orange
+  "#1E90FF", // Blue
+  "#2ECC71", // Green
+  "#FF7F50", // Coral
+];
 
-  const data = filteredBudgets.map((item) => ({
-    label: item.category,
+  const data = filteredExpenses.map((item, index) => ({
+    label: item.name,
     value: item.amount,
-    color: item.emoji ? undefined : undefined,
+    color:  COLORS[index % COLORS.length] ? undefined : undefined,
   }));
 
   const total = data.reduce((sum, item) => sum + item.value, 0);

@@ -40,7 +40,7 @@ const BudgetExpenses: React.FC = () => {
             category: Budget.category,
             budgetId: Budget.id,
             amount: expenseAmount,
-            month: Budget.month?.toLowerCase(),
+            month: Budget.month.toLowerCase(),
             description: name,
             createdAt: new Date(),
         };
@@ -110,7 +110,7 @@ const BudgetExpenses: React.FC = () => {
             <Layout />
 
             <div className="w-full h-full">
-                <div className="flex items-center justify-between p-8 font-[satoshi]">
+                <div className="flex items-center justify-between p-8">
                     {isOpen &&
                         <>
                             <div className="w-full h-full fixed inset-0 bg-black/40 backdrop-blur-sm z-20"></div>
@@ -139,7 +139,7 @@ const BudgetExpenses: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="px-8 flex gap-4 font-[satoshi]">
+                <div className="px-8 flex gap-4">
                     <div className="w-full h-fit max-w-lg p-5 flex flex-col gap-8 rounded-lg bg-white border border-zinc-200">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
@@ -219,7 +219,7 @@ const BudgetExpenses: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="font-[satoshi] px-8 py-8">
+                <div className="px-8 py-8">
                     <p className="font-semibold text-2xl">Latest Expenses</p>
                     <div className="w-full mt-4 rounded">
                         <div className="w-full h-10 flex items-center justify-around bg-zinc-300">

@@ -65,7 +65,7 @@ const Expenses = () => {
 
     return (
         <div className="w-full h-full p-4">
-            <div className="font-[satoshi] px-8 py-8">
+            <div className="px-8 py-8">
                 <p className="font-semibold text-2xl mb-3">Latest Expenses</p>
 
                 <div className="w-full flex gap-4 items-center">

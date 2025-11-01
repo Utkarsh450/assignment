@@ -62,7 +62,7 @@ const Budgets: React.FC = () => {
   return (
     <>
       <Layout />
-      <div className="w-full h-full relative font-[satoshi]">
+      <div className="w-full h-full relative">
         <div className="w-fit h-10 bg-zinc-50 rounded relative left-215 top-16 p-2">
           <select
             value={selectedMonth}
@@ -160,7 +160,6 @@ const Budgets: React.FC = () => {
           </>
         )}
 
-        {/* Cards Section */}
         <div className="px-6 sm:px-10 py-6">
           <h1 className="font-semibold text-3xl">My Budgets</h1>
 

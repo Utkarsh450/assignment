@@ -16,7 +16,6 @@ const Dashboard: React.FC = () => {
   const { data } = useContext(ExpenseContextData);
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
 
-  // ✅ Filter Based on Month Field (NOT createdAt date anymore)
   const filterByMonth = (items: ExpenseData[] | BudgetData[]) => {
     if (selectedMonth === "all") return items;
     return items.filter((elem) => elem.month?.toLowerCase() === selectedMonth.toLowerCase());
@@ -28,17 +27,15 @@ const Dashboard: React.FC = () => {
   const TotalBudget = filteredBudgets.reduce((acc, b) => acc + b.amount, 0);
   const TotalExpense = filteredExpenses.reduce((acc, e) => acc + e.amount, 0);
 
-  // ✅ Extract unique month labels directly from budget array
   const labels = [...new Set(data.budgets.map(b => b.month))];
 
-  // ✅ Prepare Bar Chart Data Using Month Field
   const chartData = labels.map(month => {
     const totalBudget = filteredBudgets
       .filter(b => b.month === month)
       .reduce((sum, b) => sum + b.amount, 0);
 
     const totalExpense = filteredExpenses
-      .filter(e => e.month === month)
+      .filter(e => e.month === month.toLowerCase())
       .reduce((sum, e) => sum + e.amount, 0);
 
     return { month, budget: totalBudget, expense: totalExpense };
@@ -55,14 +52,13 @@ const Dashboard: React.FC = () => {
 
 
   return (
-    <div className="w-full min-h-screen bg-white font-[satoshi] p-6 flex flex-col gap-6">
+    <div className="w-full min-h-screen bg-white p-6 flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Welcome back, User!</h1>
           <p className="text-sm text-gray-500">It is the best time to manage your finances</p>
         </div>
 
-        {/* ✅ Month Selector Working Correctly Now */}
         <select
           value={selectedMonth}
           onChange={(e) => setSelectedMonth(e.target.value)}
@@ -76,7 +72,6 @@ const Dashboard: React.FC = () => {
         </select>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-4 gap-4">
         {[{
           title: "Total Budget",
@@ -107,7 +102,6 @@ const Dashboard: React.FC = () => {
         ))}
       </div>
 
-      {/* Bar Chart + Pie */}
       <div className="flex gap-4">
         <div className="w-[60%] border rounded-2xl p-4 h-fit flex items-center justify-center text-gray-400 text-sm">
           <h3 className="font-semibold mb-4">Expense vs Budget</h3>
@@ -140,13 +134,12 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center justify-center w-48 h-48 text-gray-400">
-              <Pie filteredBudgets={filteredBudgets} />
+              <Pie filteredExpenses={filteredExpenses} />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Recent Transactions */}
       <div className="w-full border rounded-2xl p-4">
         <h3 className="font-semibold mb-4">Recent transactions</h3>
         <div className="text-sm">

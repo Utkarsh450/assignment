@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 const Navbar = () => {
   return (
     <div className='w-full h-full flex'>
-      <div className='flex font-[satoshi] flex-col gap-4 justify-between overflow-x-hidden'>
+      <div className='flex flex-col gap-4 justify-between overflow-x-hidden'>
         <div>
           <div className='font-medium w-full h-fit p-1 text-2xl text-sky-500 tracking-tight mx-14 mt-10'>ExpensesDiary</div>
           <div className='flex flex-col gap-10 px-14 py-10'>
