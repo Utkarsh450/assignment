@@ -8,7 +8,7 @@ const Expenses = () => {
     const [priceRange, setpriceRange] = useState<[number, number] | null>(null);
     const [isOpen, setisOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-    const [selectedMonth, setSelectedMonth] = useState("All");
+    const [selectedMonth, setSelectedMonth] = useState("all");
 
     const category = [...new Set(data.budgets.map((elem: BudgetData) => elem.category))];
     const budgetAmount = data.expenses.map((elem: ExpenseData) => elem.amount);
@@ -40,8 +40,9 @@ const Expenses = () => {
 
     const filterByMonth = useMemo(() => {
         return (items: ExpenseData[]) => {
-            if (selectedMonth === "All") return items;
-            return items.filter((elem) => elem.month === selectedMonth);
+            if (selectedMonth === "all") return items;
+            
+            return items.filter((elem) => elem.month === selectedMonth.toLowerCase());
         };
     }, [selectedMonth]);
 
@@ -73,7 +74,7 @@ const Expenses = () => {
                         onChange={(e) => setSelectedMonth(e.target.value)}
                         className="outline-none bg-zinc-300 rounded-xl h-10 px-4 font-semibold cursor-pointer"
                     >
-                        <option value="All">All</option>
+                        <option value="all">All</option>
                         <option value="January">January</option>
                         <option value="February">February</option>
                         <option value="March">March</option>

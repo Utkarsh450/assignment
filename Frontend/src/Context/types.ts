@@ -3,6 +3,7 @@ export interface BudgetData {
     category: string;
     amount: number;
     spent: number;
+        month?: string;
     ExpenseItems: number;
     emoji: string;
     createdAt: Date;

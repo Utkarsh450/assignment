@@ -8,12 +8,12 @@ import { Link } from "react-router-dom";
 
 const Budgets: React.FC = () => {
   const [isOpen, setisOpen] = useState<boolean>(false);
-  const [selectedMonth, setSelectedMonth] = useState("all")
+  const [selectedMonth, setSelectedMonth] = useState("all");
   const [name, setname] = useState<string>("");
   const [amount, setamount] = useState<string>("");
   const [showPicker, setShowPicker] = useState<boolean>(false);
   const [selectedEmoji, setSelectedEmoji] = useState<string>("🙂");
-  const [month, setmonth] = useState<string>("")
+  const [month, setmonth] = useState<string>("");
   const [monthInput, setMonthInput] = useState<string>("");
 
   const { data, setData } = useContext(ExpenseContextData)!;
@@ -45,39 +45,45 @@ const Budgets: React.FC = () => {
     setname("");
     setamount("");
     setSelectedEmoji("🙂");
-    setmonth("")
+    setmonth("");
     setisOpen(false);
   };
+
   const filterByMonth = (items: BudgetData[]) => {
     if (selectedMonth === "all") return items;
-    else
-      return items.filter((elem) => new Date(elem.createdAt).toLocaleString('default', { month: 'long' }).toLowerCase() === selectedMonth.toLowerCase());
-  };
 
+    return items.filter(
+      (elem) =>  elem.month?.toLowerCase() === selectedMonth
+    );
+  };  
 
   const filteredBudgets = filterByMonth(data.budgets);
+
   return (
     <>
       <Layout />
       <div className="w-full h-full relative font-[satoshi]">
         <div className="w-fit h-10 bg-zinc-50 rounded relative left-215 top-16 p-2">
-          <select value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)} className="outline-none" name="month">
-            <option value="All">All</option>
-            <option value="January">January</option>
-            <option value="February">February</option>
-            <option value="March">March</option>
-            <option value="April">April</option>
-            <option value="May">May</option>
-            <option value="June">June</option>
-            <option value="July">July</option>
-            <option value="August">August</option>
-            <option value="September">September</option>
-            <option value="October">October</option>
-            <option value="November">November</option>
-            <option value="December">December</option>
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value.toLowerCase())}
+            className="outline-none"
+            name="month"
+          >
+            <option value="all">All</option>
+            <option value="january">January</option>
+            <option value="february">February</option>
+            <option value="march">March</option>
+            <option value="april">April</option>
+            <option value="may">May</option>
+            <option value="june">June</option>
+            <option value="july">July</option>
+            <option value="august">August</option>
+            <option value="september">September</option>
+            <option value="october">October</option>
+            <option value="november">November</option>
+            <option value="december">December</option>
           </select>
-
         </div>
 
         {isOpen && (
@@ -87,11 +93,12 @@ const Budgets: React.FC = () => {
             <div className="fixed top-1/2 left-1/2 z-30 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-xl p-6 w-11/12 sm:w-96 max-w-sm">
               <div className="flex justify-between items-center mb-4">
                 <h1 className="font-semibold text-xl">Create Budget</h1>
-                <button onClick={() => setisOpen(false)} className="text-2xl">×</button>
+                <button onClick={() => setisOpen(false)} className="text-2xl">
+                  ×
+                </button>
               </div>
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-2 relative">
-
                 <div
                   className="w-12 h-12 bg-zinc-200 rounded-lg flex items-center justify-center cursor-pointer text-2xl"
                   onClick={() => setShowPicker(!showPicker)}
@@ -104,6 +111,7 @@ const Budgets: React.FC = () => {
                     <EmojiPicker onEmojiClick={addEmoji} />
                   </div>
                 )}
+
                 <p className="font-semibold text-md">Budget Name</p>
                 <input
                   value={name}
@@ -113,8 +121,8 @@ const Budgets: React.FC = () => {
                   placeholder="e.g. Shopping"
                   required
                 />
-                <p className="font-semibold text-md">Budget Amount</p>
 
+                <p className="font-semibold text-md">Budget Amount</p>
                 <input
                   value={amount}
                   onChange={(e) => setamount(e.target.value)}
@@ -123,15 +131,17 @@ const Budgets: React.FC = () => {
                   placeholder="e.g. 5000"
                   required
                 />
+
                 <p className="font-semibold text-md">Budget Month</p>
                 <input
                   value={monthInput}
                   onChange={(e) => {
                     const value = e.target.value;
                     setMonthInput(value);
-
                     const date = new Date(value);
-                    const monthName = date.toLocaleString("default", { month: "long" });
+                    const monthName = date
+                      .toLocaleString("default", { month: "long" })
+                      .toLowerCase();
                     setmonth(monthName);
                   }}
                   className="p-2 border rounded w-full outline-none"
@@ -139,7 +149,10 @@ const Budgets: React.FC = () => {
                   required
                 />
 
-                <button type="submit" className="p-2 bg-sky-500 hover:bg-sky-600 transition text-white rounded">
+                <button
+                  type="submit"
+                  className="p-2 bg-sky-500 hover:bg-sky-600 transition text-white rounded"
+                >
                   Create Budget
                 </button>
               </form>
@@ -147,11 +160,11 @@ const Budgets: React.FC = () => {
           </>
         )}
 
+        {/* Cards Section */}
         <div className="px-6 sm:px-10 py-6">
           <h1 className="font-semibold text-3xl">My Budgets</h1>
 
           <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
             <div
               onClick={() => setisOpen(true)}
               className="border-2 border-dashed border-zinc-400 hover:border-zinc-600 transition-all flex flex-col justify-center items-center rounded-xl py-10 cursor-pointer"

@@ -40,9 +40,9 @@ const BudgetExpenses: React.FC = () => {
             category: Budget.category,
             budgetId: Budget.id,
             amount: expenseAmount,
-            description: name, // Using name as description
+            month: Budget.month?.toLowerCase(),
+            description: name,
             createdAt: new Date(),
-            month: new Date().toLocaleString('default', { month: 'long' }).toLowerCase()
         };
 
         const updatedBudget = {

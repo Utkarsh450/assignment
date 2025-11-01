@@ -12,53 +12,46 @@ import {
 } from "recharts";
 import Pie from "../components/Pie";
 
-
 const Dashboard: React.FC = () => {
   const { data } = useContext(ExpenseContextData);
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
 
+  // ✅ Filter Based on Month Field (NOT createdAt date anymore)
   const filterByMonth = (items: ExpenseData[] | BudgetData[]) => {
     if (selectedMonth === "all") return items;
-    return items.filter((elem) => {
-      const itemMonth = new Date(elem.createdAt).toLocaleString('default', { month: 'long' });
-      return itemMonth.toLowerCase() === selectedMonth.toLowerCase();
-    });
+    return items.filter((elem) => elem.month?.toLowerCase() === selectedMonth.toLowerCase());
   };
 
   const filteredBudgets = filterByMonth(data.budgets) as BudgetData[];
   const filteredExpenses = filterByMonth(data.expenses) as ExpenseData[];
+
   const TotalBudget = filteredBudgets.reduce((acc, b) => acc + b.amount, 0);
   const TotalExpense = filteredExpenses.reduce((acc, e) => acc + e.amount, 0);
-  
-  const labels = [...new Set(data.budgets.map(b => 
-    new Date(b.createdAt).toLocaleString('default', { month: 'long' })
-  ))];
 
+  // ✅ Extract unique month labels directly from budget array
+  const labels = [...new Set(data.budgets.map(b => b.month))];
+
+  // ✅ Prepare Bar Chart Data Using Month Field
   const chartData = labels.map(month => {
     const totalBudget = filteredBudgets
-      .filter(b => new Date(b.createdAt).toLocaleString('default', { month: 'long' }) === month)
+      .filter(b => b.month === month)
       .reduce((sum, b) => sum + b.amount, 0);
 
     const totalExpense = filteredExpenses
-      .filter(e => new Date(e.createdAt).toLocaleString('default', { month: 'long' }) === month)
+      .filter(e => e.month === month)
       .reduce((sum, e) => sum + e.amount, 0);
 
-    return {
-      month,
-      budget: totalBudget,
-      expense: totalExpense,
-    };
+    return { month, budget: totalBudget, expense: totalExpense };
   });
 
   const sortedData = filteredExpenses
     .slice()
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 6);
+
   const growthRate = TotalBudget > 0
     ? ((TotalBudget - TotalExpense) / TotalBudget) * 100
     : 0;
-  console.log(data.expenses);
-
 
 
   return (
@@ -68,28 +61,22 @@ const Dashboard: React.FC = () => {
           <h1 className="text-2xl font-semibold">Welcome back, User!</h1>
           <p className="text-sm text-gray-500">It is the best time to manage your finances</p>
         </div>
+
+        {/* ✅ Month Selector Working Correctly Now */}
         <select
           value={selectedMonth}
           onChange={(e) => setSelectedMonth(e.target.value)}
           className="border p-2 rounded-lg outline-none text-sm"
         >
           <option value="all">All Time</option>
-          <option value="January">January</option>
-          <option value="February">February</option>
-          <option value="March">March</option>
-          <option value="April">April</option>
-          <option value="May">May</option>
-          <option value="June">June</option>
-          <option value="July">July</option>
-          <option value="August">August</option>
-          <option value="September">September</option>
-          <option value="October">October</option>
-          <option value="November">November</option>
-          <option value="December">December</option>
+          {[
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+          ].map(m => <option key={m} value={m}>{m}</option>)}
         </select>
-
       </div>
 
+      {/* Stats */}
       <div className="grid grid-cols-4 gap-4">
         {[{
           title: "Total Budget",
@@ -119,6 +106,8 @@ const Dashboard: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {/* Bar Chart + Pie */}
       <div className="flex gap-4">
         <div className="w-[60%] border rounded-2xl p-4 h-fit flex items-center justify-center text-gray-400 text-sm">
           <h3 className="font-semibold mb-4">Expense vs Budget</h3>
@@ -139,15 +128,15 @@ const Dashboard: React.FC = () => {
             <div className="flex flex-col gap-3">
               <h3 className="font-semibold">Budget</h3>
               <div className="text-sm flex flex-col gap-1">
-              {filteredBudgets
-                .slice(0, 6)
-                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                .map((elem) => (
-                  <div key={elem.id} className="flex gap-2">
-                    <div className="w-4 h-4 rounded-full bg-purple-500"></div>
-                    <div className="font-semibold text-zinc-500">{elem.category}</div>
-                  </div>
-                ))}
+                {filteredBudgets
+                  .slice(0, 6)
+                  .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                  .map((elem) => (
+                    <div key={elem.id} className="flex gap-2">
+                      <div className="w-4 h-4 rounded-full bg-purple-500"></div>
+                      <div className="font-semibold text-zinc-500">{elem.category}</div>
+                    </div>
+                  ))}
               </div>
             </div>
             <div className="flex items-center justify-center w-48 h-48 text-gray-400">
@@ -157,6 +146,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Recent Transactions */}
       <div className="w-full border rounded-2xl p-4">
         <h3 className="font-semibold mb-4">Recent transactions</h3>
         <div className="text-sm">
@@ -166,18 +156,18 @@ const Dashboard: React.FC = () => {
             <p className="font-semibold text-md">Category</p>
             <p className="font-semibold text-md">Date</p>
           </div>
-          {sortedData.map((elem: ExpenseData) => {
-            return <div key={elem.id} className="w-full h-10 flex items-center rounded justify-around bg-white">
+          {sortedData.map((elem: ExpenseData) => (
+            <div key={elem.id} className="w-full h-10 flex items-center rounded justify-around bg-white">
               <p className="font-semibold text-md">{elem.name}</p>
               <p className="font-semibold text-md">{elem.amount}</p>
               <p className="font-semibold text-md">{elem.category}</p>
               <p className="font-semibold text-md">{new Date(elem.createdAt).toLocaleDateString()}</p>
             </div>
-          })}
+          ))}
         </div>
       </div>
     </div>
   );
 };
 
-export default Dashboard; 
+export default Dashboard;
