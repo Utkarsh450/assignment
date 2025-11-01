@@ -1,37 +1,6 @@
-import { createContext, useState, ReactNode, useEffect } from "react";
-
-export interface BudgetData {
-    id: string;
-    category: string;
-    amount: number;
-    spent: number;
-    ExpenseItems: number;
-    emoji: string;
-    createdAt: Date;
-}
-
-export interface ExpenseData {
-    id: string;
-    category: string;
-    budgetId: string;
-    amount: number;
-    createdAt: Date;
-}
-
-interface ExpenseContextType {
-    data: {
-        budgets: BudgetData[];
-        expenses: ExpenseData[];
-    };
-    setData: React.Dispatch<
-        React.SetStateAction<{
-            budgets: BudgetData[];
-            expenses: ExpenseData[];
-        }>
-    >;
-}
-
-export const ExpenseContextData = createContext<ExpenseContextType | null>(null);
+import { useState, type ReactNode, useEffect } from "react";
+import type { BudgetData, ExpenseData } from "./types";
+import { ExpenseContextData } from "./ExpenseContextTypes";
 
 const ExpenseContext = ({ children }: { children: ReactNode }) => {
 
@@ -46,12 +15,12 @@ const ExpenseContext = ({ children }: { children: ReactNode }) => {
         if (stored) {
             const storedItem = JSON.parse(stored);
 
-            storedItem.budgets = storedItem.budgets.map((b: any) => ({
+            storedItem.budgets = storedItem.budgets.map((b: Omit<BudgetData, 'createdAt'> & { createdAt: string }) => ({
                 ...b,
                 createdAt: new Date(b.createdAt),
             }));
 
-            storedItem.expenses = storedItem.expenses.map((e: any) => ({
+            storedItem.expenses = storedItem.expenses.map((e: Omit<ExpenseData, 'createdAt'> & { createdAt: string }) => ({
                 ...e,
                 createdAt: new Date(e.createdAt),
             }));

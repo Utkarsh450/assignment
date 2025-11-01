@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
-import { ExpenseContextData } from "../Context/ExpenseContext";
+import { ExpenseContextData } from "../Context/ExpenseContextTypes";
+import type { BudgetData, ExpenseData } from "../Context/types";
 import {
   BarChart,
   Bar,
@@ -7,54 +8,39 @@ import {
   YAxis,
   Tooltip,
   Legend,
-  CartesianGrid,
   ResponsiveContainer
 } from "recharts";
 import Pie from "../components/Pie";
-export interface BudgetData {
-  id: string;
-  category: string;
-  amount: number;
-  month: string;
-  spent: number;
-  ExpenseItems: number;
-  emoji: string;
-  createdAt: Date;
-}
-export interface ExpenseData {
-  id: string;
-  name: string;
-  month: string;
-  category: string;
-  budgetId: string;
-  amount: number;
-  createdAt: Date;
-}
 
 
 const Dashboard: React.FC = () => {
-  const { data, setData } = useContext(ExpenseContextData)
+  const { data } = useContext(ExpenseContextData);
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
 
   const filterByMonth = (items: ExpenseData[] | BudgetData[]) => {
     if (selectedMonth === "all") return items;
-    else
-      return items.filter((elem) => elem.month === selectedMonth);
+    return items.filter((elem) => {
+      const itemMonth = new Date(elem.createdAt).toLocaleString('default', { month: 'long' });
+      return itemMonth.toLowerCase() === selectedMonth.toLowerCase();
+    });
   };
 
-
-  const filteredBudgets = filterByMonth(data.budgets);
-  const filteredExpenses = filterByMonth(data.expenses);
+  const filteredBudgets = filterByMonth(data.budgets) as BudgetData[];
+  const filteredExpenses = filterByMonth(data.expenses) as ExpenseData[];
   const TotalBudget = filteredBudgets.reduce((acc, b) => acc + b.amount, 0);
   const TotalExpense = filteredExpenses.reduce((acc, e) => acc + e.amount, 0);
-  const labels = [...new Set(filteredBudgets.map(b => b.month))];
+  
+  const labels = [...new Set(data.budgets.map(b => 
+    new Date(b.createdAt).toLocaleString('default', { month: 'long' })
+  ))];
+
   const chartData = labels.map(month => {
     const totalBudget = filteredBudgets
-      .filter(b => b.month === month)
+      .filter(b => new Date(b.createdAt).toLocaleString('default', { month: 'long' }) === month)
       .reduce((sum, b) => sum + b.amount, 0);
 
     const totalExpense = filteredExpenses
-      .filter(e => e.month === month)
+      .filter(e => new Date(e.createdAt).toLocaleString('default', { month: 'long' }) === month)
       .reduce((sum, e) => sum + e.amount, 0);
 
     return {
@@ -63,8 +49,11 @@ const Dashboard: React.FC = () => {
       expense: totalExpense,
     };
   });
-  const sortedData = [...filteredExpenses].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 6)
+
+  const sortedData = filteredExpenses
+    .slice()
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 6);
   const growthRate = TotalBudget > 0
     ? ((TotalBudget - TotalExpense) / TotalBudget) * 100
     : 0;
@@ -150,13 +139,15 @@ const Dashboard: React.FC = () => {
             <div className="flex flex-col gap-3">
               <h3 className="font-semibold">Budget</h3>
               <div className="text-sm flex flex-col gap-1">
-                {filteredBudgets.map(elem => {
-                  return <div className="flex gap-2">
+              {filteredBudgets
+                .slice(0, 6)
+                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                .map((elem) => (
+                  <div key={elem.id} className="flex gap-2">
                     <div className="w-4 h-4 rounded-full bg-purple-500"></div>
                     <div className="font-semibold text-zinc-500">{elem.category}</div>
                   </div>
-                }).slice(0, 6).sort(
-                  (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())}
+                ))}
               </div>
             </div>
             <div className="flex items-center justify-center w-48 h-48 text-gray-400">

@@ -1,15 +1,6 @@
 import { useContext, useMemo, useState } from "react";
-import { ExpenseContextData } from "../Context/ExpenseContext";
-
-export interface ExpenseData {
-    id: string;
-    name: string;
-    category: string;
-    budgetId: string;
-    amount: number;
-    month: string;
-    createdAt: Date | string;
-}
+import { ExpenseContextData } from "../Context/ExpenseContextTypes";
+import type { ExpenseData, BudgetData } from "../Context/types";
 
 const Expenses = () => {
     const { data, setData } = useContext(ExpenseContextData);
@@ -19,17 +10,17 @@ const Expenses = () => {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedMonth, setSelectedMonth] = useState("All");
 
-    const category = [...new Set(data.budgets.map((elem) => elem.category))];
-    const budgetAmount = data.expenses.map((elem) => elem.amount);
+    const category = [...new Set(data.budgets.map((elem: BudgetData) => elem.category))];
+    const budgetAmount = data.expenses.map((elem: ExpenseData) => elem.amount);
     const maxBudget = budgetAmount.length > 0 ? Math.max(...budgetAmount) : 0;
 
     const deleteHandler = (ExpenseId: string) => {
-        const expenseToDelete = data.expenses.find((e) => e.id === ExpenseId);
+        const expenseToDelete = data.expenses.find((e: ExpenseData) => e.id === ExpenseId);
         if (!expenseToDelete) return;
 
-        const updatedExpenses = data.expenses.filter((e) => e.id !== ExpenseId);
+        const updatedExpenses = data.expenses.filter((e: ExpenseData) => e.id !== ExpenseId);
 
-        const updatedBudgets = data.budgets.map((b) => {
+        const updatedBudgets = data.budgets.map((b: BudgetData) => {
             if (b.id === expenseToDelete.budgetId) {
                 return {
                     ...b,
@@ -47,10 +38,12 @@ const Expenses = () => {
         }));
     };
 
-    const filterByMonth = (items: ExpenseData[]) => {
-        if (selectedMonth === "All") return items;
-        return items.filter((elem) => elem.month === selectedMonth);
-    };
+    const filterByMonth = useMemo(() => {
+        return (items: ExpenseData[]) => {
+            if (selectedMonth === "All") return items;
+            return items.filter((elem) => elem.month === selectedMonth);
+        };
+    }, [selectedMonth]);
 
     const filteredExpenses: ExpenseData[] = useMemo(() => {
         const monthFiltered = filterByMonth(data.expenses);
@@ -67,7 +60,7 @@ const Expenses = () => {
 
             return matchesSearch && matchesCategory && matchesPrice;
         });
-    }, [query, selectedCategory, priceRange, selectedMonth, data.expenses]);
+    }, [query, selectedCategory, priceRange, data.expenses, filterByMonth]);
 
     return (
         <div className="w-full h-full p-4">

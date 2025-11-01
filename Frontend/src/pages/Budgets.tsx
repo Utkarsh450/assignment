@@ -1,29 +1,10 @@
 import { useContext, useState } from "react";
 import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
-import { ExpenseContextData } from "../Context/ExpenseContext";
+import { ExpenseContextData } from "../Context/ExpenseContextTypes";
+import type { BudgetData } from "../Context/types";
 import { nanoid } from "nanoid";
 import Layout from "../components/Layout";
 import { Link } from "react-router-dom";
-
-export interface BudgetData {
-  id: string;
-  category: string;
-  amount: number;
-  month: string;
-  spent: number;
-  ExpenseItems: number;
-  emoji: string;
-  createdAt: Date;
-}
-export interface ExpenseData {
-  id: string;
-  name: string;
-  month: string;
-  category: string;
-  budgetId: string;
-  amount: number;
-  createdAt: Date;
-}
 
 const Budgets: React.FC = () => {
   const [isOpen, setisOpen] = useState<boolean>(false);
@@ -67,10 +48,10 @@ const Budgets: React.FC = () => {
     setmonth("")
     setisOpen(false);
   };
-  const filterByMonth = (items: ExpenseData[] | BudgetData[]) => {
+  const filterByMonth = (items: BudgetData[]) => {
     if (selectedMonth === "all") return items;
     else
-      return items.filter((elem) => elem.month === selectedMonth);
+      return items.filter((elem) => new Date(elem.createdAt).toLocaleString('default', { month: 'long' }).toLowerCase() === selectedMonth.toLowerCase());
   };
 
 

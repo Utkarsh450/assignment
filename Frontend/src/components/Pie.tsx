@@ -1,16 +1,7 @@
 import Stack from "@mui/material/Stack";
 import { PieChart } from "@mui/x-charts/PieChart";
 
-interface BudgetData {
-  id: string;
-  category: string;
-  amount: number;
-  month: string;
-  spent: number;
-  ExpenseItems: number;
-  emoji: string;
-  createdAt: Date;
-}
+import type { BudgetData } from "../Context/types";
 
 interface PieProps {
   filteredBudgets: BudgetData[];

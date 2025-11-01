@@ -2,27 +2,9 @@ import { useParams, useNavigate } from "react-router-dom"
 import Layout from "../components/Layout"
 import { MoveLeft } from 'lucide-react';
 import { useContext, useState } from "react";
-import { ExpenseContextData, type ExpenseData } from "../Context/ExpenseContext";
+import { ExpenseContextData } from "../Context/ExpenseContextTypes";
+import type { BudgetData, ExpenseData } from "../Context/types";
 import { nanoid } from "nanoid";
-
-export interface BudgetData {
-    id: string;
-    category: string;
-    amount: number;
-    spent: number;
-    ExpenseItems: number;
-    emoji: string;
-    createdAt: Date;
-}
-
-export interface ExpenseData {
-    id: string;
-    name: string;
-    category: string;
-    budgetId: string;
-    amount: number;
-    createdAt: Date;
-}
 
 const BudgetExpenses: React.FC = () => {
 
@@ -52,14 +34,15 @@ const BudgetExpenses: React.FC = () => {
         const expenseAmount = Number(amount);
         if (!expenseAmount || expenseAmount <= 0) return;
 
-        const newExpense = {
+        const newExpense: ExpenseData = {
             id: nanoid(),
-            month: Budget.month,
             name: name,
             category: Budget.category,
             budgetId: Budget.id,
             amount: expenseAmount,
-            createdAt: new Date()
+            description: name, // Using name as description
+            createdAt: new Date(),
+            month: new Date().toLocaleString('default', { month: 'long' }).toLowerCase()
         };
 
         const updatedBudget = {
