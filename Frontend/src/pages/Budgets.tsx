@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 
 const Budgets: React.FC = () => {
   const [isOpen, setisOpen] = useState<boolean>(false);
+  const [selectedMonth, setselectedMonth] = useState("All")
   const [name, setname] = useState<string>("");
   const [amount, setamount] = useState<string>("");
   const [showPicker, setShowPicker] = useState<boolean>(false);
