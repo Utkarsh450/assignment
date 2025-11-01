@@ -5,9 +5,29 @@ import { nanoid } from "nanoid";
 import Layout from "../components/Layout";
 import { Link } from "react-router-dom";
 
+export interface BudgetData {
+  id: string;
+  category: string;
+  amount: number;
+  month: string;
+  spent: number;
+  ExpenseItems: number;
+  emoji: string;
+  createdAt: Date;
+}
+export interface ExpenseData {
+  id: string;
+  name: string;
+  month: string;
+  category: string;
+  budgetId: string;
+  amount: number;
+  createdAt: Date;
+}
+
 const Budgets: React.FC = () => {
   const [isOpen, setisOpen] = useState<boolean>(false);
-  const [selectedMonth, setselectedMonth] = useState("All")
+  const [selectedMonth, setSelectedMonth] = useState("all")
   const [name, setname] = useState<string>("");
   const [amount, setamount] = useState<string>("");
   const [showPicker, setShowPicker] = useState<boolean>(false);
@@ -47,11 +67,37 @@ const Budgets: React.FC = () => {
     setmonth("")
     setisOpen(false);
   };
+  const filterByMonth = (items: ExpenseData[] | BudgetData[]) => {
+    if (selectedMonth === "all") return items;
+    else
+      return items.filter((elem) => elem.month === selectedMonth);
+  };
 
+
+  const filteredBudgets = filterByMonth(data.budgets);
   return (
     <>
       <Layout />
       <div className="w-full h-full relative font-[satoshi]">
+        <div className="w-fit h-10 bg-zinc-50 rounded relative left-215 top-16 p-2">
+          <select value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)} className="outline-none" name="month">
+            <option value="All">All</option>
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+          </select>
+
+        </div>
 
         {isOpen && (
           <>
@@ -97,20 +143,20 @@ const Budgets: React.FC = () => {
                   required
                 />
                 <p className="font-semibold text-md">Budget Month</p>
-<input
-  value={monthInput}
-  onChange={(e) => {
-    const value = e.target.value;
-    setMonthInput(value);
+                <input
+                  value={monthInput}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setMonthInput(value);
 
-    const date = new Date(value);
-    const monthName = date.toLocaleString("default", { month: "long" });
-    setmonth(monthName);
-  }}
-  className="p-2 border rounded w-full outline-none"
-  type="month"
-  required
-/>
+                    const date = new Date(value);
+                    const monthName = date.toLocaleString("default", { month: "long" });
+                    setmonth(monthName);
+                  }}
+                  className="p-2 border rounded w-full outline-none"
+                  type="month"
+                  required
+                />
 
                 <button type="submit" className="p-2 bg-sky-500 hover:bg-sky-600 transition text-white rounded">
                   Create Budget
@@ -133,7 +179,7 @@ const Budgets: React.FC = () => {
               <p className="font-medium text-lg mt-1">Create New Budget</p>
             </div>
 
-            {data.budgets.map((item) => (
+            {filteredBudgets.map((item) => (
               <Link
                 to={`/budgets/${item.id}`}
                 key={item.id}

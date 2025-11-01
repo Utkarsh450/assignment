@@ -77,6 +77,9 @@ const BudgetExpenses: React.FC = () => {
         setname("");
         setamount("");
     };
+    const totalSpent = expensesForThisBudget.reduce((sum, exp) => sum + exp.amount, 0);
+    const remaining = Budget.amount - totalSpent;
+    const isLimitExceeded = totalSpent >= Budget.amount;
     const deleteHandler = (ExpenseId: string) => {
         const expenseToDelete = data.expenses.find((e) => e.id === ExpenseId);
         if (!expenseToDelete) return;
@@ -100,22 +103,22 @@ const BudgetExpenses: React.FC = () => {
             budgets: updatedBudgets,
         }));
     };
-    const deleteBudget = ()=>{
-    if (!expenseId) return;
+    const deleteBudget = () => {
+        if (!expenseId) return;
 
-    const updatedBudgets = data.budgets.filter((b) => b.id !== expenseId);
+        const updatedBudgets = data.budgets.filter((b) => b.id !== expenseId);
 
-    const updatedExpenses = data.expenses.filter((e) => e.budgetId !== expenseId);
+        const updatedExpenses = data.expenses.filter((e) => e.budgetId !== expenseId);
 
-    setData((prev) => ({
-        ...prev,
-        budgets: updatedBudgets,
-        expenses: updatedExpenses,
-    }));
-    navigate(-1);
-        
-        
-                
+        setData((prev) => ({
+            ...prev,
+            budgets: updatedBudgets,
+            expenses: updatedExpenses,
+        }));
+        navigate(-1);
+
+
+
     }
 
 
@@ -170,14 +173,20 @@ const BudgetExpenses: React.FC = () => {
                                 ₹{Budget.amount}
                             </div>
                         </div>
-                        <div className="w-full h-2 bg-zinc-500 rounded">
-                            <div style={{ width: `${(Budget.spent * 100) / Budget.amount}%` }} className={`w-44 h-full ${Budget.spent >= Budget.amount ? "bg-red-500" : "bg-green-500"} rounded`}></div>
+
+                        <div className="w-full h-2 bg-zinc-300 rounded overflow-hidden">
+                            <div
+                                className={`h-full rounded ${isLimitExceeded ? "bg-red-500" : "bg-green-500"}`}
+                                style={{ width: `${Math.min((totalSpent / Budget.amount) * 100, 100)}%` }}
+                            ></div>
                         </div>
 
                         <div className="w-full flex items-center justify-between">
-                            <div className="font-semibold text-sm text-zinc-500">{ Budget.spent >= Budget.amount ? "Budget Limit Exceeded" : `${Budget.spent} spent`}</div>
                             <div className="font-semibold text-sm text-zinc-500">
-                                Remaining: {Budget.amount - Budget.spent}
+                                {isLimitExceeded ? "Budget Limit Exceeded" : `${totalSpent} spent`}
+                            </div>
+                            <div className="font-semibold text-sm text-zinc-500">
+                                Remaining: {remaining}
                             </div>
                         </div>
                     </div>
@@ -204,9 +213,24 @@ const BudgetExpenses: React.FC = () => {
                                     placeholder="e.g. 1000"
                                 />
 
-                                <button className="w-fit p-2 mt-2 bg-sky-500 hover:bg-sky-600 rounded font-semibold text-zinc-50">
+                                <button
+                                    disabled={
+                                        !name.trim() ||
+                                        !amount.trim() ||
+                                        Number(amount) <= 0 ||
+                                        Budget.spent >= Budget.amount
+                                    }
+                                    className={`
+    w-fit p-2 mt-2 rounded font-semibold text-white
+    ${Budget.spent >= Budget.amount
+                                            ? "bg-red-400 cursor-not-allowed"
+                                            : "bg-sky-500 hover:bg-sky-600"}
+    disabled:bg-zinc-400 disabled:cursor-not-allowed
+  `}
+                                >
                                     Add Expense
                                 </button>
+
                             </div>
                         </form>
                     </div>

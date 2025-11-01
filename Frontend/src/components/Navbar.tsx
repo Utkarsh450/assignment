@@ -10,7 +10,6 @@ const Navbar = () => {
             <NavLink className={"font-semibold text-xl hover:bg-sky-600/40 w-full h-14 p-2 rounded text-zinc-600"} to="/dashboard">Dashboard</NavLink>
             <NavLink className={"font-semibold text-xl hover:bg-sky-600/40 w-full h-14 p-2 rounded text-zinc-600"} to="/budgets">Budgets</NavLink>
             <NavLink className={"font-semibold text-xl hover:bg-sky-600/40 w-full h-14 p-2 rounded text-zinc-600"} to="/expenses">Expenses</NavLink>
-            <NavLink className={"font-semibold text-xl hover:bg-sky-600/40 w-full h-14 p-2 rounded text-zinc-600"} to="/dashboard/expenses">Upgrade</NavLink>
           </div>
         </div>
         <div className='flex gap-4 items-center px-10 py-10'>
